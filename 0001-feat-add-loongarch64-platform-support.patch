@@ -1,0 +1,50 @@
+diff --git a/tools/docker/Dockerfile b/tools/docker/Dockerfile
+index 760c65b..aa13574 100644
+--- a/tools/docker/Dockerfile
++++ b/tools/docker/Dockerfile
+@@ -1,5 +1,5 @@
+ #base image
+-FROM python:3.12-alpine3.20 AS certbot
++FROM ghcr.io/loong64/python:3.12-alpine3.21 AS certbot
+ 
+ ENTRYPOINT [ "certbot" ]
+ EXPOSE 80 443
+@@ -24,6 +24,7 @@ RUN apk add --no-cache --virtual .certbot-deps \
+ # increase the stability of fetching the rust crates needed to build the
+ # cryptography library
+ ARG CARGO_NET_GIT_FETCH_WITH_CLI=true
++ARG PIP_EXTRA_INDEX_URL=https://gitlab.com/api/v4/projects/65746188/packages/pypi/simple
+ # Install certbot from sources
+ #
+ # For some reason, setting the CARGO_LOG and CARGO_TERM_VERBOSE environment
+diff --git a/tools/docker/lib/common b/tools/docker/lib/common
+index 816e262..b6701b9 100644
+--- a/tools/docker/lib/common
++++ b/tools/docker/lib/common
+@@ -2,14 +2,14 @@
+ set -euxo pipefail
+ 
+ # Current supported architectures
+-export ALL_TARGET_ARCH=(amd64 arm32v6 arm64v8)
++export ALL_TARGET_ARCH=(amd64 arm32v6 arm64v8 loong64)
+ 
+ # Name of the Certbot Docker organizaation on GitHub. After creating
+ # repositories with the same names (e.g. "certbot", "dns-dnsmadeeasy", etc.)
+ # using a different account on Docker Hub, you can change this value to have
+ # the scripts modify those Docker repositories rather than the repositories for
+ # the official Certbot Docker images.
+-export DOCKER_HUB_ORG="certbot"
++export DOCKER_HUB_ORG="ghcr.io/loong64/certbot"
+ 
+ # List of Certbot plugins
+ export CERTBOT_PLUGINS=(
+@@ -49,6 +49,9 @@ arch2platform() {
+         arm64v8)
+             echo "linux/arm64"
+             ;;
++        loong64)
++            echo "linux/loong64"
++            ;;
+         *)
+             return 1
+             ;;
