@@ -1,5 +1,5 @@
 diff --git a/tools/docker/Dockerfile b/tools/docker/Dockerfile
-index 760c65b..aa13574 100644
+index 760c65b..dd8b89c 100644
 --- a/tools/docker/Dockerfile
 +++ b/tools/docker/Dockerfile
 @@ -1,5 +1,5 @@
@@ -9,16 +9,25 @@ index 760c65b..aa13574 100644
  
  ENTRYPOINT [ "certbot" ]
  EXPOSE 80 443
-@@ -24,6 +24,7 @@ RUN apk add --no-cache --virtual .certbot-deps \
+@@ -15,6 +15,7 @@ COPY certbot src/certbot
+ # Install certbot runtime dependencies
+ RUN apk add --no-cache --virtual .certbot-deps \
+         libffi \
++        libgcc \
+         libssl3 \
+         openssl \
+         ca-certificates \
+@@ -24,6 +25,8 @@ RUN apk add --no-cache --virtual .certbot-deps \
  # increase the stability of fetching the rust crates needed to build the
  # cryptography library
  ARG CARGO_NET_GIT_FETCH_WITH_CLI=true
 +ARG PIP_EXTRA_INDEX_URL=https://gitlab.com/api/v4/projects/65746188/packages/pypi/simple
++ARG UV_EXTRA_INDEX_URL=https://gitlab.com/api/v4/projects/65746188/packages/pypi/simple
  # Install certbot from sources
  #
  # For some reason, setting the CARGO_LOG and CARGO_TERM_VERBOSE environment
 diff --git a/tools/docker/lib/common b/tools/docker/lib/common
-index 816e262..b6701b9 100644
+index 9620360..bbc3b49 100644
 --- a/tools/docker/lib/common
 +++ b/tools/docker/lib/common
 @@ -2,14 +2,14 @@
